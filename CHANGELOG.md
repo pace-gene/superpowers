@@ -1,5 +1,27 @@
 # Changelog
 
+## [5.0.6] - 2026-03-25
+
+### Added
+
+- **TNG agent suite** — four named agents now ship with superpowers, each assigned a specific model tier for cost-optimised workflows:
+  - `geordi` (haiku) — code investigator: reads and traces code, produces structured reports, never modifies files
+  - `picard` (opus) — architect/planner: takes investigation reports and produces detailed implementation plans, never writes code
+  - `worf` (haiku) — implementer: executes plan tasks with TDD, escalates cleanly via NEEDS_CONTEXT/BLOCKED
+  - `riker` (sonnet) — verifier and code reviewer: final plan-level verification plus code quality assessment (merged from `code-reviewer`)
+- **Pre-implementation investigation step** in `subagent-driven-development` — dispatch geordi before starting tasks in existing codebases to prevent NEEDS_CONTEXT escalations
+- **Codebase investigation section** in `writing-plans` — geordi + picard pathway for non-trivial plans in existing codebases
+
+### Changed
+
+- **`subagent-driven-development` model selection** — replaced generic cheap/standard/capable guidance with a named-agent table (geordi/picard/worf/riker); generic guidance retained as fallback for non-Claude-Code platforms
+- **Final review** in `subagent-driven-development` — now dispatches `riker` instead of a generic code-reviewer subagent
+- **`implementer-prompt.md`** — notes `worf` as the preferred agent; adds investigation support section directing implementers to report NEEDS_CONTEXT rather than reading files themselves
+
+### Removed
+
+- **`code-reviewer` agent** — capabilities merged into `riker`
+
 ## [5.0.5] - 2026-03-17
 
 ### Fixed

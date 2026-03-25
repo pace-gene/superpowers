@@ -1,5 +1,24 @@
 # Superpowers Release Notes
 
+## v5.0.6 (2026-03-25)
+
+### TNG Agent Suite
+
+Four named agents now ship with superpowers, replacing the generic "use the cheapest model that works" guidance with a concrete, cost-optimised pipeline modelled on Star Trek: The Next Generation characters:
+
+- **`geordi`** (haiku) — Chief Engineer of code investigation. Reads and traces code across files, produces structured reports, never modifies anything. Dispatch before planning to get real file paths and function names.
+- **`picard`** (opus) — The strategist. Takes geordi's investigation report and produces a detailed implementation plan. Never writes code itself.
+- **`worf`** (haiku) — Executes orders with discipline. Implements plan tasks via TDD, self-reviews, commits, and escalates cleanly when stuck.
+- **`riker`** (sonnet) — First Officer and final quality gate. Verifies the complete implementation against the plan, assesses code quality, and categorises any issues (Critical / Important / Suggestions) before the development branch is finished.
+
+The `code-reviewer` agent has been merged into `riker`.
+
+### Workflow Integration
+
+- `subagent-driven-development` — model selection table now maps roles to named agents; generic model guidance retained as fallback for non-Claude-Code platforms. Final review step dispatches `riker`. New pre-implementation investigation step for existing codebases.
+- `writing-plans` — new Codebase Investigation section: dispatch geordi to investigate, then picard to draft the plan skeleton for non-trivial work in existing codebases.
+- `implementer-prompt` — notes `worf` as the preferred agent; directs implementers to report NEEDS_CONTEXT rather than reading files themselves (geordi handles investigation).
+
 ## v5.0.5 (2026-03-17)
 
 ### Bug Fixes

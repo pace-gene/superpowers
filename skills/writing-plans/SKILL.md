@@ -22,6 +22,24 @@ Assume they are a skilled developer, but know almost nothing about our toolset o
 
 If the spec covers multiple independent subsystems, it should have been broken into sub-project specs during brainstorming. If it wasn't, suggest breaking this into separate plans — one per subsystem. Each plan should produce working, testable software on its own.
 
+## Codebase Investigation (existing codebases)
+
+Before defining file structure and tasks, understand the code you will be changing.
+
+**If working in an existing codebase:**
+1. Dispatch `geordi` to investigate the relevant code areas (modules, classes, patterns in use)
+2. Use the investigation report to inform file structure decisions and task decomposition — use real file paths and function names, not guesses
+
+**For non-trivial plans (multi-service, complex refactoring, unfamiliar code):**
+1. Dispatch `geordi` for investigation
+2. Dispatch `picard` with the investigation report + requirements to draft the plan structure
+3. Use picard's output as the skeleton for the detailed plan document
+
+**For simple plans (single module, clear scope, greenfield):**
+Investigation and inline plan writing (current approach) is sufficient.
+
+This step ensures plans reference real file paths, real function names, and real patterns — not assumptions that break when worf tries to implement them.
+
 ## File Structure
 
 Before defining tasks, map out which files will be created or modified and what each one is responsible for. This is where decomposition decisions get locked in.
@@ -138,7 +156,9 @@ After saving the plan, offer execution choice:
 
 **If Subagent-Driven chosen:**
 - **REQUIRED SUB-SKILL:** Use superpowers:subagent-driven-development
-- Fresh subagent per task + two-stage review
+- Worf agent handles implementation tasks (haiku model)
+- Riker agent handles final plan verification (sonnet model)
+- Fresh subagent per task + two-stage per-task review
 
 **If Inline Execution chosen:**
 - **REQUIRED SUB-SKILL:** Use superpowers:executing-plans

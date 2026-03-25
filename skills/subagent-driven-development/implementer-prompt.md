@@ -1,5 +1,8 @@
 # Implementer Subagent Prompt Template
 
+**Preferred agent:** Use the `worf` agent (haiku model) for implementation tasks.
+This template provides the prompt structure for dispatching worf or any implementer subagent.
+
 Use this template when dispatching an implementer subagent.
 
 ```
@@ -70,6 +73,13 @@ Task tool (general-purpose):
     specifically what you're stuck on, what you've tried, and what kind of help you need.
     The controller can provide more context, re-dispatch with a more capable model,
     or break the task into smaller pieces.
+
+    ## Investigation Support
+
+    If you need to understand code that wasn't provided in context, do NOT spend cycles
+    reading file after file. Instead, report NEEDS_CONTEXT with a specific description of
+    what you need to understand. The controller will dispatch geordi to investigate
+    and re-dispatch you with the findings.
 
     ## Before Reporting Back: Self-Review
 

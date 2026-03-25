@@ -60,7 +60,7 @@ digraph process {
 
     "Read plan, extract all tasks with full text, note context, create TodoWrite" [shape=box];
     "More tasks remain?" [shape=diamond];
-    "Dispatch final code reviewer subagent for entire implementation" [shape=box];
+    "Dispatch riker agent for final plan verification" [shape=box];
     "Use superpowers:finishing-a-development-branch" [shape=box style=filled fillcolor=lightgreen];
 
     "Read plan, extract all tasks with full text, note context, create TodoWrite" -> "Dispatch implementer subagent (./implementer-prompt.md)";
@@ -79,25 +79,48 @@ digraph process {
     "Code quality reviewer subagent approves?" -> "Mark task complete in TodoWrite" [label="yes"];
     "Mark task complete in TodoWrite" -> "More tasks remain?";
     "More tasks remain?" -> "Dispatch implementer subagent (./implementer-prompt.md)" [label="yes"];
-    "More tasks remain?" -> "Dispatch final code reviewer subagent for entire implementation" [label="no"];
-    "Dispatch final code reviewer subagent for entire implementation" -> "Use superpowers:finishing-a-development-branch";
+    "More tasks remain?" -> "Dispatch riker agent for final plan verification" [label="no"];
+    "Dispatch riker agent for final plan verification" -> "Use superpowers:finishing-a-development-branch";
 }
 ```
 
 ## Model Selection
 
-Use the least powerful model that can handle each role to conserve cost and increase speed.
+When named agents are available, use them by role:
 
-**Mechanical implementation tasks** (isolated functions, clear specs, 1-2 files): use a fast, cheap model. Most implementation tasks are mechanical when the plan is well-specified.
+| Role | Agent | Model | When |
+|------|-------|-------|------|
+| Pre-implementation investigation | `geordi` | haiku | Before starting, when codebase context is needed |
+| Planning (if not already planned) | `picard` | opus | Non-trivial tasks requiring architectural judgment |
+| Implementation | `worf` | haiku | All implementation tasks |
+| Final plan verification | `riker` | sonnet | After all tasks complete, before finishing branch |
+| Per-task spec compliance | (spec-reviewer-prompt.md) | haiku | After each executor task |
+| Per-task code quality | (code-quality-reviewer-prompt.md) | inherit | After spec compliance passes |
 
-**Integration and judgment tasks** (multi-file coordination, pattern matching, debugging): use a standard model.
-
-**Architecture, design, and review tasks**: use the most capable available model.
+**Fallback (no named agents):** Use the least powerful model that can handle each role.
+- Mechanical implementation (1-2 files, clear spec): cheap model
+- Integration and judgment (multi-file, pattern matching): standard model
+- Architecture, design, and review: most capable model
 
 **Task complexity signals:**
-- Touches 1-2 files with a complete spec → cheap model
-- Touches multiple files with integration concerns → standard model
-- Requires design judgment or broad codebase understanding → most capable model
+- Touches 1-2 files with a complete spec → executor (haiku)
+- Touches multiple files with integration concerns → executor with richer context
+- Requires design judgment or broad codebase understanding → picard first, then worf
+
+## Pre-Implementation Investigation
+
+Before dispatching the first worf/implementer subagent, consider whether the plan tasks have sufficient codebase context.
+
+**If working in an existing codebase:**
+Dispatch `geordi` to investigate the code areas each task will touch. Provide the investigation report as additional context to worf subagents. This prevents `NEEDS_CONTEXT` escalations and wasted cycles.
+
+**Skip this step when:**
+- The plan already contains sufficient file paths, function names, and code snippets
+- This is a greenfield project (nothing to investigate)
+- The tasks are self-contained with no existing-code dependencies
+
+**What to ask geordi:**
+Provide the plan tasks and ask it to investigate the relevant existing code. The report feeds directly into the worf context for each task.
 
 ## Handling Implementer Status
 
@@ -193,8 +216,8 @@ Code reviewer: ✅ Approved
 ...
 
 [After all tasks]
-[Dispatch final code-reviewer]
-Final reviewer: All requirements met, ready to merge
+[Dispatch riker agent for final plan verification]
+Riker: ✅ PASS — all plan requirements verified at file:line references
 
 Done!
 ```
@@ -269,6 +292,12 @@ Done!
 - **superpowers:writing-plans** - Creates the plan this skill executes
 - **superpowers:requesting-code-review** - Code review template for reviewer subagents
 - **superpowers:finishing-a-development-branch** - Complete development after all tasks
+
+**Named agents (if available):**
+- `geordi` — code investigator (haiku)
+- `picard` — planning/architecture (opus)
+- `worf` — implementation (haiku)
+- `riker` — final verification (sonnet)
 
 **Subagents should use:**
 - **superpowers:test-driven-development** - Subagents follow TDD for each task
